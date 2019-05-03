@@ -1,0 +1,47 @@
+#!/bin/bash
+# TITLE     nselookup
+# LICENSE   GPLv3
+usage() {
+    printf "$0 - List nmap NSE scripts based on a keyword in their filename\n"
+    printf "USAGE\t$0 <keyword>\n"
+    printf "WHERE\tkeyword   - a word to check nmap NSE script titles\n"
+    printf "EXAMPLE\t$0 -k vnc\n\n"
+    exit 1
+}
+
+while getopts ":k:" o; do
+    case "${o}" in
+    k) 
+        keyword=${OPTARG}
+        ;;
+    *) 
+        usage
+        ;;
+    esac
+done
+shift $((OPTIND-1))
+
+if [ -z "${keyword}" ] ; then
+    usage
+fi
+
+nseDir="/usr/share/nmap/scripts"
+dosFull="\\\e[101mdenial of service\\\e[0m"
+dos="\\\e[101mdos\\\e[0m"
+intrusive="\\\e[101mintrusive\\\e[0m"
+external="\\\e[44mexternal\\\e[0m"
+safe="\\\e[42msafe\\\e[0m"
+title="\\\e[1m\\\e[92m[+]"
+end="\\\e[0m"
+
+printf "\n[*] %s\n" $0
+for chkvuln in `ls $nseDir | egrep "$keyword" | sed "s/.nse$//" ` ; do
+    body=`nmap --script-help=$chkvuln | \
+          egrep -v "Starting Nmap|^https://nmap.org" | \
+          sed "s/intrusive/$intrusive/" | \
+          sed "s/safe/$safe/" | \
+          sed "s/dos/$dos/" | \
+          sed "s/denial of service/$dosFull/" | \
+          sed "s/^$chkvuln$/${title}  ${chkvuln}${end}/"`
+    echo -e "$body"
+done
