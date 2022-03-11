@@ -3,7 +3,7 @@
 # LICENSE   GPLv3
 usage() {
     printf "$0 - List nmap NSE scripts based on a keyword in their filename\n"
-    printf "USAGE\t$0 <keyword>\n"
+    printf "USAGE\t$0 -k <keyword>\n"
     printf "WHERE\tkeyword   - a word to check nmap NSE script titles\n"
     printf "EXAMPLE\t$0 -k vnc\n\n"
     exit 1
